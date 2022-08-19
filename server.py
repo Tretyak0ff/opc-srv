@@ -1,9 +1,26 @@
-
+#!/usr/bin/env python3.10
 import asyncio
-
+from model import Analog, Digital
 from asyncua import ua, Server
 from config import URL, URL_IDX
+from loguru import logger
+
 from asyncua.common.type_dictionary_builder import DataTypeDictionaryBuilder
+
+
+def get_valve():
+    valve_analog_1 = Analog(state='Open')
+    valve_analog_2 = Analog(state='Close')
+    valve_digital_1 = Digital(state='Open')
+    valve_digital_2 = Digital(state='Close')
+
+    valves = [valve_analog_1,
+              valve_analog_2,
+              valve_digital_1,
+              valve_digital_2]
+    logger.debug(valves)
+
+    return valves
 
 
 async def server():
@@ -20,8 +37,8 @@ async def server():
 
     valve_struct_name = 'ValveName'
     valve_struct = await dict_builder.create_data_type(valve_struct_name)
-    valve_struct.add_field('State',  ua.VariantType.String)
-    valve_struct.add_field('Signal',  ua.VariantType.String)
+    valve_struct.add_field('State', ua.VariantType.String)
+    valve_struct.add_field('Signal', ua.VariantType.String)
 
     machine_struct_name = 'FactoryName'
     machine_struct = await dict_builder.create_data_type(machine_struct_name)
@@ -42,8 +59,8 @@ async def server():
 
     # await valve_var.set_writable()
     var = ua.ValveName()
-    var.State = 'None'      # Подпихнуть переменную
-    var.Signal = 'None'     # Подпихнуть переменную
+    var.State = 'None'  # Подпихнуть переменную
+    var.Signal = 'None'  # Подпихнуть переменную
     # await valve_var.write_value(var)
 
     machine_var = await server.nodes.objects.add_variable(
@@ -67,4 +84,3 @@ async def server():
 
         while True:
             await asyncio.sleep(1)
-
