@@ -3,27 +3,13 @@ import asyncio
 from model import Analog, Digital
 from asyncua import ua, Server
 from config import URL, URL_IDX
-from loguru import logger
-
 from asyncua.common.type_dictionary_builder import DataTypeDictionaryBuilder
 
+async def server():
 
-def get_valve():
     valve_analog_1 = Analog(state='Open')
-    valve_analog_2 = Analog(state='Close')
-    valve_digital_1 = Digital(state='Open')
     valve_digital_2 = Digital(state='Close')
 
-    valves = [valve_analog_1,
-              valve_analog_2,
-              valve_digital_1,
-              valve_digital_2]
-    logger.debug(valves)
-
-    return valves
-
-
-async def server():
     server = Server()
     await server.init()
     server.set_endpoint(URL)
@@ -35,33 +21,30 @@ async def server():
     dict_builder = DataTypeDictionaryBuilder(server, idx, URL_IDX, 'MyDictionary')
     await dict_builder.init()
 
-    valve_struct_name = 'ValveName'
+    valve_struct_name = 'Valve'
     valve_struct = await dict_builder.create_data_type(valve_struct_name)
+    valve_struct.add_field('Type', ua.VariantType.String)
     valve_struct.add_field('State', ua.VariantType.String)
     valve_struct.add_field('Signal', ua.VariantType.String)
 
     machine_struct_name = 'FactoryName'
     machine_struct = await dict_builder.create_data_type(machine_struct_name)
     # machine_struct.add_field('Name', ua.VariantType.String)
-
     machine_struct.add_field('NameMachine', valve_struct, is_array=True)
 
     await dict_builder.set_dict_byte_string()
 
     await server.load_type_definitions()
 
-    # valve_var = await server.nodes.objects.add_variable(
-    #     idx,
-    #     'Valve',
-    #     None,
-    #     datatype=valve_struct.data_type
-    # )
+    var1 = ua.Valve()
+    var1.Type = str('Analog')
+    var1.State = str(valve_analog_1.state)
+    var1.Signal = str(valve_analog_1.signal)
 
-    # await valve_var.set_writable()
-    var = ua.ValveName()
-    var.State = 'None'  # Подпихнуть переменную
-    var.Signal = 'None'  # Подпихнуть переменную
-    # await valve_var.write_value(var)
+    var2 = ua.Valve()
+    var2.Type = str('Digital')
+    var2.State = str(valve_digital_2.state)
+    var2.Signal = str(valve_digital_2.signal)
 
     machine_var = await server.nodes.objects.add_variable(
         idx,
@@ -71,16 +54,15 @@ async def server():
     )
 
     await machine_var.set_writable()
-    var2 = ua.FactoryName()
-    var2.NameMachine = [var, var]
+    var3 = ua.FactoryName()
+    var3.NameMachine = [var1, var2]
     # var2.Name = 'Machine #1'
-    await machine_var.write_value(var2)
+    await machine_var.write_value(var3)
 
     async with server:
         print(getattr(dict_builder, '_type_dictionary').get_dict_value())
 
-        # v1 = await valve_var.read_value()
-        v2 = await machine_var.read_value()
+        v1 = await machine_var.read_value()
 
         while True:
             await asyncio.sleep(1)
