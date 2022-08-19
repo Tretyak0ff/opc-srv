@@ -6,4 +6,6 @@ load_dotenv()
 
 IP_ADDR = os.getenv('IP_ADDR')
 IP_PORT = os.getenv('IP_PORT')
+
 URL = f'opc.tcp://{IP_ADDR}:{IP_PORT}/UA/Server'
+URL_IDX = f'http://{IP_ADDR}:{IP_PORT}'
