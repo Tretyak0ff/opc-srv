@@ -1,4 +1,4 @@
-import logging
+
 import asyncio
 
 from asyncua import ua, Server
@@ -6,7 +6,7 @@ from config import URL, URL_IDX
 from asyncua.common.type_dictionary_builder import DataTypeDictionaryBuilder
 
 
-async def main():
+async def server():
     server = Server()
     await server.init()
     server.set_endpoint(URL)
@@ -68,9 +68,3 @@ async def main():
         while True:
             await asyncio.sleep(1)
 
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    asyncio.run(
-                main()
-            )
