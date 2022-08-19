@@ -33,22 +33,22 @@ async def main():
 
     await server.load_type_definitions()
 
-    valve_var = await server.nodes.objects.add_variable(
-        idx,
-        'Valve',
-        None,
-        datatype=valve_struct.data_type
-    )
+    # valve_var = await server.nodes.objects.add_variable(
+    #     idx,
+    #     'Valve',
+    #     None,
+    #     datatype=valve_struct.data_type
+    # )
 
-    await valve_var.set_writable()
+    # await valve_var.set_writable()
     var = ua.ValveName()
     var.State = 'None'      # Подпихнуть переменную
     var.Signal = 'None'     # Подпихнуть переменную
-    await valve_var.write_value(var)
+    # await valve_var.write_value(var)
 
     machine_var = await server.nodes.objects.add_variable(
         idx,
-        'Machine',
+        'Factory',
         None,
         datatype=machine_struct.data_type
     )
@@ -62,7 +62,7 @@ async def main():
     async with server:
         print(getattr(dict_builder, '_type_dictionary').get_dict_value())
 
-        v1 = await valve_var.read_value()
+        # v1 = await valve_var.read_value()
         v2 = await machine_var.read_value()
 
         while True:
