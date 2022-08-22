@@ -5,8 +5,8 @@ from asyncua import ua, Server
 from config import URL, URL_IDX
 from asyncua.common.type_dictionary_builder import DataTypeDictionaryBuilder
 
-async def server():
 
+async def server():
     valve_analog_1 = Analog(state='Open')
     valve_digital_2 = Digital(state='Close')
 
@@ -62,7 +62,7 @@ async def server():
     async with server:
         print(getattr(dict_builder, '_type_dictionary').get_dict_value())
 
-        v1 = await machine_var.read_value()
+        value = await machine_var.read_value()
 
         while True:
             await asyncio.sleep(1)
